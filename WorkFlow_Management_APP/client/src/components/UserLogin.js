@@ -1,0 +1,138 @@
+import React, { useContext }  from "react";
+import styled from "styled-components";
+import backgroundImage from "../assets/background2.png";
+import {NavLink, useNavigate} from "react-router-dom";
+import { DataContext } from "./DataContext";
+var bcrypt = require("bcryptjs");
+
+const UserLogin = () =>{
+  const {allUsers, loginData, setLoginData, setCurrentLoggedUser} = useContext(DataContext);
+    
+let navigate = useNavigate();
+
+ //setting the name of the inputs and values as what is written inside inputs
+ const handleChange = (value, name) =>{
+  setLoginData({...loginData, [name]: value}); 
+ }
+
+
+//on submit we get the hashed password from DB and compare to what we inputed in the password field
+function handleSubmit(ev){
+  ev.preventDefault();//prevents the page from refreshing if submit unsuccessfull
+const findUser = allUsers.find((user) => user.username === loginData.username)
+
+if(findUser === undefined ){
+  window.alert("Invalid Username or Password!");
+}
+else{
+  bcrypt.compare(loginData.password, findUser.password, function(err, result) {
+    // result == true
+    if(findUser === undefined || result===false){
+      window.alert("Invalid Username or Password!");
+    }
+    else {
+      setCurrentLoggedUser(findUser);
+      navigate(`/userHome/${findUser._id}`);
+     }
+  })
+}
+}
+
+    return (
+        <>
+          <Background />
+          <Wrapper>
+            <FormWrapper onSubmit={handleSubmit}>
+              <Input type={"text"} 
+              name="username" 
+              required 
+              placeholder="Username" 
+              onChange={(ev)=> handleChange(ev.target.value, "username")}/>
+  
+              <Input type={"password"} 
+              name="password" 
+              required 
+              placeholder="Password" 
+              onChange={(ev)=> handleChange(ev.target.value, "password")}/>
+  
+        <SubmitInput type="submit" 
+        value="Login" disabled={(!loginData.password || !loginData.username)}/>
+
+        <p>Don't have an account?</p><NavLink to="/userSignUp">  Sign Up Here! </NavLink>
+
+            </FormWrapper>
+          </Wrapper>
+        </>
+      );
+    }
+    
+    const Wrapper = styled.div`
+      /* display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh; */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-right: -50%;
+      transform: translate(-50%, -50%);
+      
+    `
+    
+    const FormWrapper = styled.form`
+    border-radius: 10px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid #42c99d;
+    box-shadow: 0px 0px 25px 1px rgb(40,176,255);
+    background: #DDEDEC;
+    width: 300px;
+    height: 300px;
+    `
+    
+    const Input= styled.input`
+    border: none;
+    background: #42c99d;
+    font-size: 16px;
+    height: 35px;
+    margin: 0px 0px 20px 0px;
+    padding:15px;
+    border-radius: 10px; 
+    `
+    
+  const SubmitInput = styled.input`
+  color: white;
+  font-weight: bold;
+  padding: 12px 35px 12px 35px;
+  margin-bottom: 10px;
+  text-align: center;
+  border: none;
+  border-radius: 10px;
+  background: #42c99d;
+
+  &:hover{
+    color: white;
+    background-color: rgb(40,176,255);
+    transition: 150ms;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  `
+    
+    const Background = styled.div`
+    background-image: url(${backgroundImage});
+    position: fixed; 
+    min-width: 100%;
+    min-height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    `
+
+
+export default UserLogin;

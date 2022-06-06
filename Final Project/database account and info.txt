@@ -1,0 +1,9 @@
+username: pojectOwner01
+password: tuDOrvpfpHsOiYky
+
+URI: mongodb+srv://pojectOwner01: tuDOrvpfpHsOiYky@cluster0.sni5u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+database name: finalproj
+collections: - users	
+	  - projects
+	  - tasks

@@ -1,0 +1,22 @@
+[  
+    {
+    "username": "user-1",
+    "type" : "user",
+    "assign-tasks": true,
+    "accepted-tasks": 2,
+    "tasks":[{
+    "assigned-users" :"John Doe, Apple Smith",
+    "task-name":"Task-1 do this",
+    "due-date": "01-01-2020",
+    "details" : "Do a table with 10 lines"
+    },
+    
+    {}
+  ],
+    "_id": "00001"
+  },
+  {
+    "username": "user-2",
+    "type":"admin",
+    "_id": "00002"
+  }]
