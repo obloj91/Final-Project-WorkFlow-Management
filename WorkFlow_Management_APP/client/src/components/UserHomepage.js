@@ -10,14 +10,17 @@ const UserHomepage = () => {
   // 1 ---------------------------- Find AssignedTask------------------------------------------
   const { currentLoggedUser, allTasks } = useContext(DataContext);
 
-  const findAssignedTasks = allTasks.filter((task) =>
-    task.assignedUsers.find(
-      (el) =>
-        currentLoggedUser !== null &&
-        currentLoggedUser.firstName === el.firstName &&
-        currentLoggedUser.lastName === el.lastName
-    )
-  );
+  const findAssignedTasks =
+    allTasks !== null
+      ? allTasks.filter((task) =>
+          task.assignedUsers.find(
+            (el) =>
+              currentLoggedUser !== null &&
+              currentLoggedUser.firstName === el.firstName &&
+              currentLoggedUser.lastName === el.lastName
+          )
+        )
+      : ""; //if we click reload page and allTasks status goes to null we do not trigger the .filter function as it wil lreturn an error
 
   console.log("findAssignedTasks", findAssignedTasks);
 
@@ -84,88 +87,104 @@ const UserHomepage = () => {
   return (
     <>
       <Background />
-      <Title>
-        Welcome {currentLoggedUser.firstName + " " + currentLoggedUser.lastName}
-      </Title>
-      {allTasks.lenght !== 0 ? (
-        <HomeWrapper>
-          <ListWrapper>
-            {findAssignedTasks.map((el) => {
-              return (
-                <TaskWrapper key={el.taskID}>
-                  <h3 style={{ color: "#F16436" }}>
-                    Project Name:{" "}
-                    <span style={{ color: "yellow" }}>{el.projectName}</span>
-                  </h3>
+      {allTasks !== null && currentLoggedUser !== null ? (
+        <>
+          <Title>
+            Welcome{" "}
+            {currentLoggedUser.firstName + " " + currentLoggedUser.lastName}
+          </Title>
 
-                  <div style={{ marginLeft: "10px" }}>
-                    <div style={{ display: "flex", marginBottom: "4px" }}>
-                      <h4 style={{ color: "#F16436" }}>
-                        Assigned Task:{" "}
-                        <span style={{ color: "white" }}>{el.taskName}</span>
-                      </h4>
-                      <label
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          position: "relative",
-                          top: "10%",
-                        }}
-                      >
-                        <input
-                          type="radio"
-                          onChange={handleChange}
-                          value={`${el.taskID}`}
-                          checked={selectTask.taskID === `${el.taskID}`}
-                          style={{ marginLeft: "25vw" }}
-                        />
-                        <span
+          <HomeWrapper>
+            <ListWrapper>
+              {findAssignedTasks.map((el) => {
+                return (
+                  <TaskWrapper key={el.taskID}>
+                    <h3 style={{ color: "#F16436" }}>
+                      Project Name:{" "}
+                      <span style={{ color: "yellow" }}>{el.projectName}</span>
+                    </h3>
+
+                    <div style={{ marginLeft: "10px" }}>
+                      <div style={{ display: "flex", marginBottom: "4px" }}>
+                        <h4 style={{ color: "#F16436" }}>
+                          Assigned Task:{" "}
+                          <span style={{ color: "white" }}>{el.taskName}</span>
+                        </h4>
+                        <label
                           style={{
-                            color: "white",
-                            fontSize: "11px",
-                            overflowWrap: "break-word",
+                            display: "flex",
+                            alignItems: "center",
+                            position: "relative",
+                            top: "10%",
                           }}
                         >
-                          Select
-                        </span>
-                      </label>
-                    </div>
-                    <div>Task Details: {el.details}</div>
-                    <div>Due Date: {el.dueDate}</div>
-                    <div>Comments: {el.comments}</div>
-                    <div>Details: {el.details}</div>
-                    <div>Number of Deliverables: {el.nbrDeliverables}</div>
-                    <div></div>
+                          <input
+                            type="radio"
+                            onChange={handleChange}
+                            value={`${el.taskID}`}
+                            checked={selectTask.taskID === `${el.taskID}`}
+                            style={{ marginLeft: "25vw" }}
+                          />
+                          <span
+                            style={{
+                              color: "white",
+                              fontSize: "11px",
+                              overflowWrap: "break-word",
+                            }}
+                          >
+                            Select
+                          </span>
+                        </label>
+                      </div>
+                      <div>Task Details: {el.details}</div>
+                      <div>Due Date: {el.dueDate}</div>
+                      <div>Comments: {el.comments}</div>
+                      <div>Details: {el.details}</div>
+                      <div>Number of Deliverables: {el.nbrDeliverables}</div>
+                      <div></div>
 
-                    <div style={{ marginTop: "5%", marginBottom: "1%" }}>
-                      Status:{""}{" "}
+                      <div style={{ marginTop: "5%", marginBottom: "1%" }}>
+                        Status:{""}{" "}
+                      </div>
+                      <Select
+                        options={options}
+                        placeholder={el.status}
+                        onChange={(ev) => {
+                          setFormData({
+                            status: ev.label,
+                            dueDate: el.dueDate,
+                            taskID: el.taskID,
+                            nbrDeliverables: el.nbrDeliverables,
+                            details: el.details,
+                            comments: el.comments,
+                            assignedUsers: el.assignedUsers,
+                          });
+                        }}
+                      />
                     </div>
-                    <Select
-                      options={options}
-                      placeholder={el.status}
-                      onChange={(ev) => {
-                        setFormData({
-                          status: ev.label,
-                          dueDate: el.dueDate,
-                          taskID: el.taskID,
-                          nbrDeliverables: el.nbrDeliverables,
-                          details: el.details,
-                          comments: el.comments,
-                          assignedUsers: el.assignedUsers,
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <Button onClick={updateTaskStat}>Update Task Status</Button>
-                  </div>
-                </TaskWrapper>
-              );
-            })}
-          </ListWrapper>
-        </HomeWrapper>
+                    <div>
+                      <Button onClick={updateTaskStat}>
+                        Update Task Status
+                      </Button>
+                    </div>
+                  </TaskWrapper>
+                );
+              })}
+            </ListWrapper>
+          </HomeWrapper>
+          <Wrapper>
+            <FormWrapper onSubmit={onSumbitHandler}>
+              <input
+                type={"file"}
+                onChange={filesUploadHandler}
+                style={{ marginLeft: "2%" }}
+              />
+              <SubmitButton type="submit">Upload File</SubmitButton>
+            </FormWrapper>
+          </Wrapper>
+        </>
       ) : (
-        //if page refreshes we use this message to indicate admin is logged out
+        //if page refreshes we use this message to indicate user is logged out
         <div
           style={{
             width: "600px",
@@ -180,6 +199,7 @@ const UserHomepage = () => {
               borderRadius: "10px",
               padding: "10px",
               background: "red",
+              marginRight: "15px",
             }}
           >
             User signed out, go back to login page!
@@ -198,17 +218,6 @@ const UserHomepage = () => {
           </Title>
         </div>
       )}
-
-      <Wrapper>
-        <FormWrapper onSubmit={onSumbitHandler}>
-          <input
-            type={"file"}
-            onChange={filesUploadHandler}
-            style={{ marginLeft: "2%" }}
-          />
-          <SubmitButton type="submit">Upload File</SubmitButton>
-        </FormWrapper>
-      </Wrapper>
     </>
   );
 };
@@ -227,6 +236,7 @@ const Title = styled.h1`
   margin-top: 2%;
   margin-left: 3%;
   color: white;
+  font-size: 25px;
 `;
 
 const HomeWrapper = styled.div`
@@ -333,7 +343,7 @@ const Background = styled.div`
   background-image: url(${backgroundImage});
   position: absolute;
   min-width: 100%;
-  min-height: 150%;
+  min-height: 300%;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
